@@ -27,6 +27,7 @@ export const docsLayout: DocsLayout = {
         { title: 'Buff', slug: 'plugins/buff' },
         { title: 'Coupon', slug: 'plugins/coupon' },
         { title: 'Currency', slug: 'plugins/currency' },
+        { title: 'Generator', slug: 'plugins/generator' },
         { title: 'Key Item', slug: 'plugins/key-item' },
         { title: 'Loot Table', slug: 'plugins/loot-table' },
         { title: 'Skill', slug: 'plugins/skill' },
