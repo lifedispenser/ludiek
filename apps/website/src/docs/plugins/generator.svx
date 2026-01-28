@@ -1,0 +1,94 @@
+---
+title: Generator Plugin
+---
+
+<script lang="ts">
+  import GeneratorDemonstration from './GeneratorDemonstration.svelte';
+  import { GeneratorPlugin } from '@123ishatest/ludiek';
+</script>
+
+Generators are production systems that automatically produce [Output](../engine/output) over time, optionally consuming [Input](../engine/input) and requiring [Conditions](../engine/condition).
+
+You can use them to:
+
+- Set up automatic gold mining that produces 10 gold per second
+- Create a factory that consumes wood to produce furniture
+- Build a power plant that requires electricity to be active
+- Manage any time-based production system
+
+The generator plugin handles the activation state and periodic production of generators. When active and their conditions are met, generators consume their input (if any) and produce their output each tick.
+
+## Demo
+
+<GeneratorDemonstration />
+
+## Usage
+
+```ts
+import { GeneratorPlugin } from '@123ishatest/ludiek';
+
+const generator = new GeneratorPlugin();
+
+// Define your generators
+const generators: GeneratorDefinition[] = [
+  {
+    id: 'gold-mine',
+    output: { type: '/output/gold', amount: 10 },
+  },
+  {
+    id: 'furniture-factory',
+    input: { type: '/input/wood', amount: 5 },
+    output: { type: '/output/furniture', amount: 2 },
+  },
+  {
+    id: 'power-plant',
+    output: { type: '/output/electricity', amount: 15 },
+    input: { type: '/input/fuel', amount: 3 },
+    conditions: { type: '/condition/has-electricity', amount: 10 },
+  },
+];
+
+generator.loadContent(generators);
+
+// Activate a generator so it starts producing
+generator.activateGenerator('gold-mine');
+
+// Check if a generator is active
+generator.isGeneratorActive('gold-mine'); // true
+
+// Deactivate a generator
+generator.deactivateGenerator('gold-mine');
+generator.isGeneratorActive('gold-mine'); // false
+
+// Call tick() in your game loop to produce output
+generator.tick(deltaTime);
+```
+
+Hook into generator events for UI/popups
+
+```ts
+// Listen to generator activation
+generator.onGeneratorActivated.subscribe(({ generatorId, generatorDefinition }) => {
+  console.log(`${generatorId} started producing!`);
+});
+
+// Listen to generator deactivation
+generator.onGeneratorDeactivated.subscribe(({ generatorId, generatorDefinition }) => {
+  console.log(`${generatorId} stopped producing!`);
+});
+
+// Listen to generator failures
+generator.onGeneratorTickFailed.subscribe(({ generatorId, reason }) => {
+  if (reason === 'conditions_not_met') {
+    console.log(`${generatorId} can't run - conditions not met`);
+  } else if (reason === 'cannot_consume_input') {
+    console.log(`${generatorId} can't run - not enough input`);
+  } else if (reason === 'cannot_produce_output') {
+    console.log(`${generatorId} can't run - can't produce output`);
+  }
+});
+```
+
+## Links
+
+- [src/plugins/generator/GeneratorPlugin.ts](https://github.com/123ishaTest/ludiek/blob/main/packages/ludiek/src/plugins/generator/GeneratorPlugin.ts)

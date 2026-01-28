@@ -4,7 +4,7 @@ export type { GeneratorDefinition } from './GeneratorDefinition';
 export { type GeneratorPluginState, createGeneratorState } from './GeneratorPluginState';
 
 // Events
-export type { GeneratorActivated, GeneratorDeactivated, GeneratorTickFailed } from './GeneratorEvents';
+export type { GeneratorActivated, GeneratorDeactivated, GeneratorTickFailed, GeneratorTicked } from './GeneratorEvents';
 
 // Errors
 export { UnknownGeneratorError } from './GeneratorErrors';
