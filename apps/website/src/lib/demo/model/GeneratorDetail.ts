@@ -6,4 +6,6 @@ export interface GeneratorDetail {
   input?: number;
   outputCurrency?: string;
   inputCurrency?: string;
+  cost?: number;
+  costCurrency?: string;
 }

@@ -1,64 +1,32 @@
 <script lang="ts">
-  import { achievement, currency, game, statistic } from '$lib/demo/demo.svelte';
-  import { onMount } from 'svelte';
-
-  let planted = $derived(statistic.getMapValue('/statistic/plants-planted', '/plant/sunflower'));
-
-  let money = $derived(currency.getBalance('/currency/money'));
-  let gems = $derived(currency.getBalance('/currency/gems'));
-
-  currency.onCurrencyGain.sub((c) => {
-    if (c.id === '/currency/money') {
-      statistic.incrementStatistic('/statistic/total-money', c.amount);
-    }
-  });
-
-  achievement.onAchievementEarn.sub((a) => {
-    console.log('Achievement gained:', a);
-  });
-
-  const sow = () => {
-    game.request({
-      // TODO(@Isha): Move this into a game.request combined type
-      type: '/farming/sow-seed',
-      plant: '/plant/sunflower',
-    });
-
-    achievement.checkAchievements();
-
-    game.engine.produce({
-      type: '/skill/gain-experience',
-      skill: '/skill/farming',
-      amount: 1,
-    });
-  };
-
-  const trade = () => {
-    game.handleTransaction({
-      input: {
-        type: '/input/lose-currency',
-        id: '/currency/money',
-        amount: 100,
-      },
-      output: {
-        type: '/output/gain-currency',
-        id: '/currency/gems',
-        amount: 1,
-      },
-    });
-  };
-
-  onMount(() => {
-    game.loadFromStorage();
-    game.start();
-  });
+  const demos = [
+    {
+      name: 'Farming Demo',
+      description: 'A simple farming game with currency, statistics, and achievements.',
+      path: '/demo/farming',
+    },
+    {
+      name: 'Cookie Clicker',
+      description: 'A classic incremental game with generators, upgrades, and achievements.',
+      path: '/demo/cookie-clicker',
+    },
+  ];
 </script>
 
 <div class="p-4">
-  <p>You have {money} money</p>
-  <p>You have {gems} gems</p>
-  <p>You have planted {planted} sunflowers</p>
+  <h1 class="mb-6 text-3xl font-bold">Demos</h1>
 
-  <button class="btn btn-primary" onclick={() => sow()}>Sow</button>
-  <button class="btn btn-secondary" onclick={() => trade()}>Trade 100 money for 1 gem</button>
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {#each demos as demo}
+      <a
+        href={demo.path}
+        class="card card-border bg-base-200 hover:bg-base-300 transition-colors"
+      >
+        <div class="card-body">
+          <h2 class="card-title">{demo.name}</h2>
+          <p class="text-sm text-base-content/70">{demo.description}</p>
+        </div>
+      </a>
+    {/each}
+  </div>
 </div>
