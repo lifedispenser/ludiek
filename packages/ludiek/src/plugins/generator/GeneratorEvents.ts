@@ -1,5 +1,6 @@
 import { GeneratorDefinition } from './GeneratorDefinition';
-import { BaseOutput, BaseInput } from '@ludiek/engine/output/LudiekProducer';
+import { BaseOutput } from '@ludiek/engine/output/LudiekProducer';
+import { BaseInput } from '@ludiek/engine/input/LudiekConsumer';
 
 export interface GeneratorActivated {
   generatorId: string;

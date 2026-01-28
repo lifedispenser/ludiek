@@ -131,7 +131,7 @@ export class UpgradePlugin extends LudiekPlugin {
       if (upgrade.accumulateBonuses) {
         return upgrade.bonusPerLevel.slice(0, level);
       } else {
-        return upgrade.bonusPerLevel[level - 1];
+        return [upgrade.bonusPerLevel[level - 1]];
       }
     });
   }
