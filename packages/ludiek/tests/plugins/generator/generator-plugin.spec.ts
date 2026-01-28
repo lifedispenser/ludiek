@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GeneratorPlugin } from '@ludiek/plugins/generator/GeneratorPlugin';
+import { type GeneratorTicked } from '@ludiek/plugins/generator/GeneratorEvents';
 import { LudiekEngine } from '@ludiek/engine/LudiekEngine';
 import { AlwaysProducer } from '@tests/shared/AlwaysOutput';
 import { AlwaysConsumer } from '@tests/shared/AlwaysInput';
@@ -143,12 +144,18 @@ describe('Happy flow', () => {
       ]);
       generatorPlugin.activateGenerator('gold-generator');
       const produceSpy = vi.spyOn(engine, 'produce');
+      const tickedEvents: GeneratorTicked[] = [];
+      generatorPlugin.onGeneratorTicked.subscribe((e) => tickedEvents.push(e));
 
       // Act
       generatorPlugin.tick(1);
 
       // Assert
       expect(produceSpy).toHaveBeenCalled();
+      expect(tickedEvents).toHaveLength(1);
+      expect(tickedEvents[0].generatorId).toBe('gold-generator');
+      expect(tickedEvents[0].delta).toBe(1);
+      expect(tickedEvents[0].outputProduced).toEqual({ type: '/output/always', amount: 10 });
     });
 
     it('skips inactive generators', () => {
@@ -209,12 +216,16 @@ describe('Happy flow', () => {
       ]);
       generatorPlugin.activateGenerator('gold-generator');
       const produceSpy = vi.spyOn(engine, 'produce');
+      const tickedEvents: GeneratorTicked[] = [];
+      generatorPlugin.onGeneratorTicked.subscribe((e) => tickedEvents.push(e));
 
       // Act
       generatorPlugin.tick(1);
 
       // Assert
       expect(produceSpy).toHaveBeenCalled();
+      expect(tickedEvents).toHaveLength(1);
+      expect(tickedEvents[0].outputProduced).toEqual({ type: '/output/always', amount: 10 });
     });
 
     it('scales output by delta (0.5 seconds)', () => {
@@ -230,12 +241,16 @@ describe('Happy flow', () => {
       ]);
       generatorPlugin.activateGenerator('gold-generator');
       const produceSpy = vi.spyOn(engine, 'produce');
+      const tickedEvents: GeneratorTicked[] = [];
+      generatorPlugin.onGeneratorTicked.subscribe((e) => tickedEvents.push(e));
 
       // Act
       generatorPlugin.tick(0.5);
 
       // Assert
       expect(produceSpy).toHaveBeenCalled();
+      expect(tickedEvents).toHaveLength(1);
+      expect(tickedEvents[0].outputProduced).toEqual({ type: '/output/always', amount: 5 });
     });
 
     it('scales output by delta (2 seconds)', () => {
@@ -251,12 +266,16 @@ describe('Happy flow', () => {
       ]);
       generatorPlugin.activateGenerator('gold-generator');
       const produceSpy = vi.spyOn(engine, 'produce');
+      const tickedEvents: GeneratorTicked[] = [];
+      generatorPlugin.onGeneratorTicked.subscribe((e) => tickedEvents.push(e));
 
       // Act
       generatorPlugin.tick(2);
 
       // Assert
       expect(produceSpy).toHaveBeenCalled();
+      expect(tickedEvents).toHaveLength(1);
+      expect(tickedEvents[0].outputProduced).toEqual({ type: '/output/always', amount: 20 });
     });
   });
 
@@ -280,6 +299,8 @@ describe('Happy flow', () => {
       const evaluateSpy = vi.spyOn(engine, 'evaluate').mockReturnValue(true);
       const canConsumeSpy = vi.spyOn(engine, 'canConsume').mockReturnValue(true);
       const canProduceSpy = vi.spyOn(engine, 'canProduce').mockReturnValue(true);
+      const tickedEvents: GeneratorTicked[] = [];
+      generatorPlugin.onGeneratorTicked.subscribe((e) => tickedEvents.push(e));
 
       // Act
       generatorPlugin.tick(1);
@@ -289,6 +310,11 @@ describe('Happy flow', () => {
       expect(consumeSpy).toHaveBeenCalled();
       expect(canProduceSpy).toHaveBeenCalled();
       expect(produceSpy).toHaveBeenCalled();
+      expect(tickedEvents).toHaveLength(1);
+      expect(tickedEvents[0].generatorId).toBe('mixed-generator');
+      expect(tickedEvents[0].delta).toBe(1);
+      expect(tickedEvents[0].inputConsumed).toEqual({ type: '/input/always', amount: 3 });
+      expect(tickedEvents[0].outputProduced).toEqual({ type: '/output/always', amount: 15 });
     });
   });
 

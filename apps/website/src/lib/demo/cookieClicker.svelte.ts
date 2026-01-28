@@ -10,13 +10,9 @@ import {
   CurrencyPlugin,
   GainCurrencyProducer,
   LoseCurrencyConsumer,
-  type LudiekBonusContribution,
-  type LudiekCondition,
   LudiekEngine,
   LudiekGame,
-  type LudiekInput,
-  type LudiekOutput,
-  UpgradePlugin,
+  LudiekModifier,
   StatisticPlugin,
   TrueEvaluator,
   HasCurrencyEvaluator,
@@ -24,8 +20,71 @@ import {
   SkillPlugin,
   AllEvaluator,
   IsUpgradeMaxedEvaluator,
+  UpgradePlugin,
+  type BaseBonus,
+  type LudiekBonusContribution,
+  type LudiekCondition,
+  type LudiekInput,
+  type LudiekOutput,
 } from '@123ishatest/ludiek';
 import { achievements, currencies, generators, statistics, upgrades } from './cookieClickerContent';
+
+// Modifiers for bonus types
+interface ClickPowerBonus extends BaseBonus {
+  type: '/bonus/click-power';
+}
+
+export class ClickPowerModifier extends LudiekModifier<ClickPowerBonus> {
+  readonly type = '/bonus/click-power';
+  readonly default = 0;
+  readonly variant = 'additive' as const;
+
+  stringify(bonus: ClickPowerBonus): string {
+    return this.type;
+  }
+}
+
+interface CursorEfficiencyBonus extends BaseBonus {
+  type: '/bonus/cursor-efficiency';
+}
+
+export class CursorEfficiencyModifier extends LudiekModifier<CursorEfficiencyBonus> {
+  readonly type = '/bonus/cursor-efficiency';
+  readonly default = 0;
+  readonly variant = 'additive' as const;
+
+  stringify(bonus: CursorEfficiencyBonus): string {
+    return this.type;
+  }
+}
+
+interface GrandmaEfficiencyBonus extends BaseBonus {
+  type: '/bonus/grandma-efficiency';
+}
+
+export class GrandmaEfficiencyModifier extends LudiekModifier<GrandmaEfficiencyBonus> {
+  readonly type = '/bonus/grandma-efficiency';
+  readonly default = 0;
+  readonly variant = 'additive' as const;
+
+  stringify(bonus: GrandmaEfficiencyBonus): string {
+    return this.type;
+  }
+}
+
+interface FarmEfficiencyBonus extends BaseBonus {
+  type: '/bonus/farm-efficiency';
+}
+
+export class FarmEfficiencyModifier extends LudiekModifier<FarmEfficiencyBonus> {
+  readonly type = '/bonus/farm-efficiency';
+  readonly default = 0;
+  readonly variant = 'additive' as const;
+
+  stringify(bonus: FarmEfficiencyBonus): string {
+    return this.type;
+  }
+}
 import type { GeneratorDetail } from './model/GeneratorDetail';
 
 // Define plugins with reactive state
@@ -57,7 +116,12 @@ export const engine = new LudiekEngine(
     ],
     consumers: [new LoseCurrencyConsumer()],
     producers: [new GainCurrencyProducer()],
-    modifiers: [],
+    modifiers: [
+      new ClickPowerModifier(),
+      new CursorEfficiencyModifier(),
+      new GrandmaEfficiencyModifier(),
+      new FarmEfficiencyModifier(),
+    ],
   },
   engineState,
 );

@@ -1,4 +1,6 @@
 import { GeneratorDefinition } from './GeneratorDefinition';
+import { BaseOutput } from '@ludiek/engine/output/LudiekProducer';
+import { BaseInput } from '@ludiek/engine/input/LudiekConsumer';
 
 export interface GeneratorActivated {
   generatorId: string;
@@ -13,4 +15,12 @@ export interface GeneratorDeactivated {
 export interface GeneratorTickFailed {
   generatorId: string;
   reason: 'conditions_not_met' | 'cannot_consume_input' | 'cannot_produce_output';
+}
+
+export interface GeneratorTicked {
+  generatorId: string;
+  generatorDefinition: GeneratorDefinition;
+  delta: number;
+  inputConsumed: BaseInput | BaseInput[] | null;
+  outputProduced: BaseOutput | BaseOutput[];
 }

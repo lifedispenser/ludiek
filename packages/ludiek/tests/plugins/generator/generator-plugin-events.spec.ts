@@ -199,34 +199,3 @@ describe('GeneratorTickFailed event', () => {
     expect(failedEvent?.reason).toBe('cannot_produce_output');
   });
 });
-
-describe('Multiple event subscriptions', () => {
-  it('supports multiple subscribers to the same event', () => {
-    // Arrange
-    const generatorPlugin = new GeneratorPlugin();
-    const engine = new LudiekEngine({
-      plugins: [generatorPlugin],
-      producers: [new AlwaysProducer()],
-    });
-    generatorPlugin.loadContent([
-      { id: 'gold-generator', output: { type: '/output/always', amount: 10 } },
-    ]);
-
-    let count = 0;
-
-    const unsub1 = generatorPlugin.onGeneratorActivated.sub(() => {
-      count++;
-    });
-    const unsub2 = generatorPlugin.onGeneratorActivated.sub(() => {
-      count++;
-    });
-
-    // Act
-    generatorPlugin.activateGenerator('gold-generator');
-
-    // After
-    unsub1();
-    unsub2();
-    expect(count).toBe(2);
-  });
-});

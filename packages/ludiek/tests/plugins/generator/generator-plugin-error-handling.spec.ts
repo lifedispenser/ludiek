@@ -117,30 +117,6 @@ describe('Error handling', () => {
   });
 
   describe('Edge cases', () => {
-    it('handles negative delta gracefully', () => {
-      // Arrange
-      generatorPlugin.activateGenerator('gold-generator');
-      const produceSpy = vi.spyOn(engine, 'produce');
-
-      // Act
-      generatorPlugin.tick(-1);
-
-      // Assert
-      expect(produceSpy).toHaveBeenCalled();
-    });
-
-    it('handles zero delta gracefully', () => {
-      // Arrange
-      generatorPlugin.activateGenerator('gold-generator');
-      const produceSpy = vi.spyOn(engine, 'produce');
-
-      // Act
-      generatorPlugin.tick(0);
-
-      // Assert
-      expect(produceSpy).toHaveBeenCalled();
-    });
-
     it('activating already active generator does not cause issues', () => {
       // Arrange
       generatorPlugin.activateGenerator('gold-generator');

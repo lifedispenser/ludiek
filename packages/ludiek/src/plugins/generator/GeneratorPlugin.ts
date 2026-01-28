@@ -6,7 +6,7 @@ import { BaseOutput } from '@ludiek/engine/output/LudiekProducer';
 import { BaseInput } from '@ludiek/engine/input/LudiekConsumer';
 import { BaseCondition } from '@ludiek/engine/condition/LudiekEvaluator';
 import { UnknownGeneratorError } from './GeneratorErrors';
-import { GeneratorActivated, GeneratorDeactivated, GeneratorTickFailed } from './GeneratorEvents';
+import { GeneratorActivated, GeneratorDeactivated, GeneratorTickFailed, GeneratorTicked } from './GeneratorEvents';
 
 export class GeneratorPlugin extends LudiekPlugin {
   readonly name = 'generator';
@@ -101,6 +101,7 @@ export class GeneratorPlugin extends LudiekPlugin {
       }
 
       // 2. Consume input (if any)
+      let inputConsumed: BaseInput | BaseInput[] | null = null;
       if (generator.input) {
         const scaledInput = this.scaleInput(generator.input, delta);
         if (!this.canConsume(scaledInput)) {
@@ -111,6 +112,7 @@ export class GeneratorPlugin extends LudiekPlugin {
           return;
         }
         this.consume(scaledInput);
+        inputConsumed = scaledInput;
       }
 
       // 3. Produce output
@@ -123,6 +125,15 @@ export class GeneratorPlugin extends LudiekPlugin {
         return;
       }
       this.produce(scaledOutput);
+
+      // Emit tick event with actual amounts
+      this._onGeneratorTicked.dispatch({
+        generatorId: id,
+        generatorDefinition: generator,
+        delta,
+        inputConsumed,
+        outputProduced: scaledOutput,
+      });
     });
   }
 
@@ -173,6 +184,7 @@ export class GeneratorPlugin extends LudiekPlugin {
   protected _onGeneratorActivated = new SimpleEventDispatcher<GeneratorActivated>();
   protected _onGeneratorDeactivated = new SimpleEventDispatcher<GeneratorDeactivated>();
   protected _onGeneratorTickFailed = new SimpleEventDispatcher<GeneratorTickFailed>();
+  protected _onGeneratorTicked = new SimpleEventDispatcher<GeneratorTicked>();
 
   /**
    * Emitted when a generator is activated
@@ -193,5 +205,12 @@ export class GeneratorPlugin extends LudiekPlugin {
    */
   public get onGeneratorTickFailed(): ISimpleEvent<GeneratorTickFailed> {
     return this._onGeneratorTickFailed.asEvent();
+  }
+
+  /**
+   * Emitted when a generator successfully ticks and produces output
+   */
+  public get onGeneratorTicked(): ISimpleEvent<GeneratorTicked> {
+    return this._onGeneratorTicked.asEvent();
   }
 }

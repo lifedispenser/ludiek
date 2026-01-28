@@ -200,21 +200,6 @@ export class LudiekEngine<
     });
   }
 
-  public getProducer(type: string): LudiekProducer {
-    const producer = this._producers[type];
-    if (!producer) {
-      console.warn(
-        `[Engine] Producer not found for type: '${type}'. Available producers:`,
-        Object.keys(this._producers),
-      );
-      const registeredProducers = Object.keys(this._producers).join(', ');
-      throw new OutputNotFoundError(
-        `Cannot process output of type '${type}' because its processor is not registered. Registered processors are: ${registeredProducers}`,
-      );
-    }
-    return producer;
-  }
-
   public getBonus(bonus: LudiekBonus<Modifiers>): number {
     // TODO(@Isha): Should this be cached between ticks too?
     const modifier = this.getModifier(bonus.type);
@@ -294,6 +279,23 @@ export class LudiekEngine<
       );
     }
     return evaluator;
+  }
+
+  /**
+   * Get a producer or throw an error if it doesn't exist
+   * @param type
+   * @private
+   */
+  private getProducer(type: string): LudiekProducer {
+    const producer = this._producers[type];
+
+    if (producer == null) {
+      const registeredProcessors = Object.keys(this._producers).join(', ');
+      throw new OutputNotFoundError(
+        `Cannot process output of type '${type}' because its processor is not registered. Registered processors are: ${registeredProcessors}`,
+      );
+    }
+    return producer;
   }
 
   /**
